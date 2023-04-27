@@ -1,7 +1,6 @@
 import type { SetupForm } from "@/components/setup";
 import useWebSocket from "react-use-websocket";
 import { useEffect } from "react";
-import { isTemplateExpression } from "typescript";
 
 // https://bbernhard.github.io/signal-cli-rest-api/
 
