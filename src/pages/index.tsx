@@ -13,6 +13,10 @@ const Home = () => {
 		setSetup(data);
 	};
 
+	const onStop = () => {
+		setSetup(undefined);
+	};
+
 	return (
 		<>
 			<Head>
@@ -22,7 +26,7 @@ const Home = () => {
 				className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
 			>
 				{!setup && <Setup onSubmit={onSubmit} />}
-				{setup && <Conversation setup={setup} />}
+				{setup && <Conversation setup={setup} onStop={onStop} />}
 			</main>
 		</>
 	);
