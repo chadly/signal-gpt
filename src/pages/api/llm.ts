@@ -52,11 +52,7 @@ export default async function handler(
 		...convertItemsToMessages(history),
 	];
 
-	console.log(messages);
-
 	const chatResponse = await chat.call(messages);
-
-	console.log(chatResponse);
 
 	const data = JSON.parse(chatResponse.text) as AiResponse;
 

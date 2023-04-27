@@ -32,7 +32,15 @@ const ConversationHistory = ({ timeline }: ConversationHistoryProps) => {
 								</div>
 								<div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
 									<div>
-										<p className="text-sm text-white">{event.content}</p>
+										<p
+											className={`text-sm ${
+												event.type === "reasoning"
+													? "text-neutral-500"
+													: "text-white"
+											} ${event.type === "reasoning" ? "italic" : ""}`}
+										>
+											{event.content}
+										</p>
 									</div>
 									<div className="whitespace-nowrap text-right text-sm text-slate-200">
 										<time dateTime={event.datetime}>{event.datetime}</time>
