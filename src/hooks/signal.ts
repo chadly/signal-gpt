@@ -11,7 +11,7 @@ interface SignalProps {
 
 const useSignal = ({ setup, onMessageReceived }: SignalProps) => {
 	const { lastMessage, readyState } = useWebSocket(
-		"ws://localhost:8080/v1/receive"
+		`ws://localhost:8080/v1/receive/${setup.from}`
 	);
 
 	useEffect(() => {
@@ -22,7 +22,7 @@ const useSignal = ({ setup, onMessageReceived }: SignalProps) => {
 
 	const sendMessage = useCallback(
 		(message: string) => {
-			fetch("http://localhost:8080/v1/send", {
+			fetch("http://localhost:8080/v2/send", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
