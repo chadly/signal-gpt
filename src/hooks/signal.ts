@@ -1,6 +1,6 @@
 import type { SetupForm } from "@/components/setup";
-import useWebSocket, { ReadyState } from "react-use-websocket";
-import { useCallback, useEffect, useReducer } from "react";
+import useWebSocket from "react-use-websocket";
+import { useEffect } from "react";
 
 // https://bbernhard.github.io/signal-cli-rest-api/
 
@@ -20,24 +20,7 @@ const useSignal = ({ setup, onMessageReceived }: SignalProps) => {
 		}
 	}, [lastMessage, onMessageReceived]);
 
-	const sendMessage = useCallback(
-		(message: string) => {
-			fetch("http://localhost:8080/v2/send", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					message,
-					number: setup.from,
-					recipients: [setup.to],
-				}),
-			});
-		},
-		[setup.from, setup.to]
-	);
-
-	return { readyState, sendMessage };
+	return { readyState };
 };
 
 export default useSignal;

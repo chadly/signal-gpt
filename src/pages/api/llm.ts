@@ -56,5 +56,17 @@ export default async function handler(
 
 	const data = JSON.parse(chatResponse.text) as AiResponse;
 
+	await fetch("http://localhost:8080/v2/send", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			message: data.msg,
+			number: setup.from,
+			recipients: [setup.to],
+		}),
+	});
+
 	res.status(200).json(data);
 }

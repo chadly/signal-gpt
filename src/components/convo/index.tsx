@@ -5,7 +5,6 @@ import ConversationHistory from "./history";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import useSignal from "@/hooks/signal";
 import { ReadyState } from "react-use-websocket";
-import { useEffect } from "react";
 
 interface ConversationProps {
 	setup: SetupForm;
@@ -13,20 +12,10 @@ interface ConversationProps {
 
 const Conversation = ({ setup }: ConversationProps) => {
 	const { history, onHumanMessage, onStart, status } = useAi(setup);
-	const { readyState, sendMessage: sendSignalMessage } = useSignal({
+	const { readyState } = useSignal({
 		setup,
 		onMessageReceived: onHumanMessage,
 	});
-
-	useEffect(() => {
-		if (history.length > 0) {
-			const lastMessage = history[history.length - 1];
-
-			if (lastMessage.type === "ai") {
-				sendSignalMessage(lastMessage.content);
-			}
-		}
-	}, [history, sendSignalMessage]);
 
 	return (
 		<>
