@@ -52,31 +52,33 @@ export default async function handler(
 
 		data = {
 			msg: chatResponse.text,
-			reasoning: "Unable to parse response from AI",
+			reasoning: "Unable to parse reasoning from AI",
 		};
 	}
 
-	if (!data.msg || !data.reasoning) {
-		console.error(`Missing expected keys: ${chatResponse.text}`);
-		res.status(500).json({
-			reasoning: `Missing expected keys: ${chatResponse.text}`,
-			msg: "um...",
-		});
+	if (data.msg.includes("AI")) {
+		// fucking AI is revealing itself, discard the message
+		console.error(
+			`AI revealed itself - discarding message: ${chatResponse.text}`
+		);
+		res.status(500);
 		return;
 	}
 
-	//send the message via Signal to recipient
-	await fetch("http://localhost:8080/v2/send", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			message: data.msg,
-			number: setup.from,
-			recipients: [setup.to],
-		}),
-	});
+	if (data.msg) {
+		// send the message via Signal to recipient
+		await fetch("http://localhost:8080/v2/send", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				message: data.msg,
+				number: setup.from,
+				recipients: [setup.to],
+			}),
+		});
+	}
 
 	res.status(200).json(data);
 }

@@ -13,6 +13,9 @@ type Action =
 			type: "start";
 	  }
 	| {
+			type: "error";
+	  }
+	| {
 			type: "ai";
 			message: string;
 			reasoning: string;
@@ -28,6 +31,12 @@ const reducer = (state: AiState, action: Action): AiState => {
 			return {
 				...state,
 				status: "thinking",
+			};
+
+		case "error":
+			return {
+				...state,
+				status: "waiting",
 			};
 
 		case "ai":
@@ -93,9 +102,12 @@ const useAi = (setup: SetupForm) => {
 				body: JSON.stringify(data),
 			});
 
-			const { msg, reasoning } = (await response.json()) as AiResponse;
-
-			dispatch({ type: "ai", message: msg, reasoning });
+			if (response.status === 200) {
+				const { msg, reasoning } = (await response.json()) as AiResponse;
+				dispatch({ type: "ai", message: msg, reasoning });
+			} else {
+				console.error("LLM Error. Check server logs.", response.status);
+			}
 		}
 
 		if (status === "thinking") {
