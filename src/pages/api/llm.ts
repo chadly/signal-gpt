@@ -11,7 +11,7 @@ import type { SetupForm } from "@/components/setup";
 
 const chat = new ChatOpenAI({
 	temperature: 0,
-	modelName: "gpt-4",
+	modelName: process.env.MODEL,
 	openAIApiKey: process.env.OPENAI_API_KEY,
 });
 
@@ -54,8 +54,22 @@ export default async function handler(
 
 	const chatResponse = await chat.call(messages);
 
-	const data = JSON.parse(chatResponse.text) as AiResponse;
+	let data: AiResponse;
+	try {
+		data = JSON.parse(chatResponse.text);
+	} catch (e) {
+		console.error(`Unable to parse: ${chatResponse.text}`);
+		res.status(500);
+		return;
+	}
 
+	if (!data.msg || !data.reasoning) {
+		console.error(`Missing expected keys: ${chatResponse.text}`);
+		res.status(500);
+		return;
+	}
+
+	//send the message via Signal to recipient
 	await fetch("http://localhost:8080/v2/send", {
 		method: "POST",
 		headers: {

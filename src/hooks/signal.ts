@@ -9,6 +9,29 @@ interface SignalProps {
 	onMessageReceived: (message: string) => void;
 }
 
+interface DataMessage {
+	expiresInSeconds: number;
+	message: string;
+	timestamp: number;
+	viewOnce: boolean;
+}
+
+interface Envelope {
+	source: string;
+	sourceNumber: string;
+	sourceUuid: string;
+	sourceName: string;
+	sourceDevice: number;
+	timestamp: number;
+	dataMessage?: DataMessage;
+}
+
+interface WebSocketMessage {
+	envelope: Envelope;
+	account: string;
+	subscription: number;
+}
+
 const useSignal = ({ setup, onMessageReceived }: SignalProps) => {
 	const { lastMessage, readyState } = useWebSocket(
 		`ws://localhost:8080/v1/receive/${setup.from}`
@@ -16,9 +39,18 @@ const useSignal = ({ setup, onMessageReceived }: SignalProps) => {
 
 	useEffect(() => {
 		if (lastMessage) {
-			onMessageReceived(lastMessage.data);
+			const wsMsg = JSON.parse(lastMessage.data) as WebSocketMessage;
+
+			console.log("debug", JSON.stringify(wsMsg, null, 2));
+
+			if (
+				wsMsg.envelope.sourceNumber === setup.to &&
+				wsMsg.envelope.dataMessage
+			) {
+				onMessageReceived(wsMsg.envelope.dataMessage.message);
+			}
 		}
-	}, [lastMessage, onMessageReceived]);
+	}, [lastMessage, onMessageReceived, setup.to]);
 
 	return { readyState };
 };
