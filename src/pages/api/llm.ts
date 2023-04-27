@@ -47,7 +47,7 @@ export default async function handler(
 
 	const messages = [
 		new SystemChatMessage(
-			`${setup.role}\n${setup.style}\n${messageFormat}\nYou should start the conversation off with "${setup.starter}"`
+			`${setup.role}\n${setup.style}\n${messageFormat}\nStart the conversation now`
 		),
 		...convertItemsToMessages(history),
 	];

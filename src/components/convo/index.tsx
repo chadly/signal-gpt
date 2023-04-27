@@ -42,7 +42,7 @@ const Conversation = ({ setup }: ConversationProps) => {
 						Thinking...
 					</span>
 				)}
-				{status === "waiting" && <span>Waiting for human... </span>}
+				{status === "waiting" && <span>Waiting for human...</span>}
 			</div>
 		</>
 	);

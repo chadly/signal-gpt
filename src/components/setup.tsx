@@ -5,7 +5,6 @@ export interface SetupForm {
 	phone: string;
 	role: string;
 	style: string;
-	starter: string;
 }
 
 interface SetupProps {
@@ -87,24 +86,6 @@ const Setup = ({ onSubmit }: SetupProps) => {
 									rows={3}
 									className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
 									defaultValue={`You respond to messages by not capitalizing your sentences and using slang.\nYou capitalize proper names and the word "I".\nYou use punctuation where appropriate.`}
-								/>
-							</div>
-						</div>
-
-						<div className="col-span-full">
-							<label
-								htmlFor="starter"
-								className="block text-sm font-medium leading-6 text-white"
-							>
-								Conversation Starter
-							</label>
-							<div className="mt-2">
-								<textarea
-									id="starter"
-									{...register("starter", { required: true })}
-									rows={3}
-									className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-									defaultValue={`hello, mother`}
 								/>
 							</div>
 						</div>
