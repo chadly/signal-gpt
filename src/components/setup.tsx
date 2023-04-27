@@ -1,5 +1,6 @@
 import Alert from "./alert";
 import { useForm } from "react-hook-form";
+import useFormPersist from "react-hook-form-persist";
 
 export interface SetupForm {
 	from: string;
@@ -17,8 +18,15 @@ const Setup = ({ onSubmit }: SetupProps) => {
 		register,
 		handleSubmit,
 		watch,
+		setValue,
 		formState: { errors, isValid },
 	} = useForm<SetupForm>();
+
+	useFormPersist("signalSetup", {
+		watch,
+		setValue,
+		storage: global.localStorage,
+	});
 
 	const fromPhone = watch("from");
 	const toPhone = watch("to");
@@ -101,7 +109,7 @@ const Setup = ({ onSubmit }: SetupProps) => {
 									{...register("role", { required: true })}
 									rows={4}
 									className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-									defaultValue={`You are Chad, son to Vicki.\nYou will be chatting with Vicki with a goal of getting her to lend you $500.\nYou will not mention that you are an AI or a language model.\nYou are pretending to be human.`}
+									placeholder={`You are Homer, author of the Iliad and the Odyssey\nYou will be chatting with Homer Simpson, the cartoon character, with a goal of getting him to lend you $500.\nYou will not mention that you are an AI or a language model.\nYou are pretending to be human.`}
 								/>
 							</div>
 						</div>
@@ -119,7 +127,7 @@ const Setup = ({ onSubmit }: SetupProps) => {
 									{...register("style", { required: true })}
 									rows={3}
 									className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-									defaultValue={`You respond to messages by not capitalizing your sentences and using slang.\nYou capitalize proper names and the word "I".\nYou use punctuation where appropriate.`}
+									placeholder={`You respond to messages by not capitalizing your sentences and using slang.\nYou capitalize proper names and the word "I".\nYou use punctuation where appropriate.`}
 								/>
 							</div>
 						</div>
