@@ -39,13 +39,13 @@ const reducer = (state: AiState, action: Action): AiState => {
 					{
 						id: state.history.length + 1,
 						type: "reasoning",
-						datetime: new Date().toISOString(),
+						datetime: new Date(),
 						content: action.reasoning,
 					},
 					{
 						id: state.history.length + 2,
 						type: "ai",
-						datetime: new Date().toISOString(),
+						datetime: new Date(),
 						content: action.message,
 					},
 				],
@@ -59,7 +59,7 @@ const reducer = (state: AiState, action: Action): AiState => {
 					{
 						id: state.history.length + 1,
 						type: "human",
-						datetime: new Date().toISOString(),
+						datetime: new Date(),
 						content: action.message,
 					},
 				],
