@@ -52,15 +52,17 @@ const Conversation = ({ setup, onStop }: ConversationProps) => {
 						)}
 						{status === "waiting" && <span>Waiting for human...</span>}
 					</div>
-					<div className="my-1 text-white">
-						<button
-							type="button"
-							className="rounded-md bg-red-500 px-3 py-2 text-lg font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-							onClick={onStop}
-						>
-							Stop
-						</button>
-					</div>
+					{status !== "idle" && (
+						<div className="my-1 text-white">
+							<button
+								type="button"
+								className="rounded-md bg-red-500 px-3 py-2 text-lg font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+								onClick={onStop}
+							>
+								Stop
+							</button>
+						</div>
+					)}
 				</>
 			)}
 		</>

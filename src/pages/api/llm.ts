@@ -15,18 +15,6 @@ const chat = new ChatOpenAI({
 	openAIApiKey: process.env.OPENAI_API_KEY,
 });
 
-const convertItemsToMessages = (items: TimelineItem[]) =>
-	items
-		.filter(({ type }) => type === "human" || type === "ai")
-		.map(({ type, content }) => {
-			switch (type) {
-				case "human":
-					return new HumanChatMessage(content);
-				case "ai":
-					return new SystemChatMessage(content);
-			}
-		}) as BaseChatMessage[];
-
 export interface AiResponse {
 	msg: string;
 	reasoning: string;
@@ -52,20 +40,28 @@ export default async function handler(
 		...convertItemsToMessages(history),
 	];
 
+	console.log(JSON.stringify(messages, null, 2));
+
 	const chatResponse = await chat.call(messages);
 
 	let data: AiResponse;
 	try {
 		data = JSON.parse(chatResponse.text);
 	} catch (e) {
-		console.error(`Unable to parse: ${chatResponse.text}`);
-		res.status(500);
-		return;
+		console.warn(`Unable to parse: ${chatResponse.text}`);
+
+		data = {
+			msg: chatResponse.text,
+			reasoning: "Unable to parse response from AI",
+		};
 	}
 
 	if (!data.msg || !data.reasoning) {
 		console.error(`Missing expected keys: ${chatResponse.text}`);
-		res.status(500);
+		res.status(500).json({
+			reasoning: `Missing expected keys: ${chatResponse.text}`,
+			msg: "um...",
+		});
 		return;
 	}
 
@@ -83,4 +79,23 @@ export default async function handler(
 	});
 
 	res.status(200).json(data);
+}
+
+function convertItemsToMessages(items: TimelineItem[]): BaseChatMessage[] {
+	const results: (BaseChatMessage | string)[] = [];
+
+	for (const item of items) {
+		if (item.type === "human") {
+			results.push(new HumanChatMessage(item.content));
+		} else if (item.type === "reasoning") {
+			results.push(item.content);
+		} else if (item.type === "ai") {
+			const reasoning = results.pop();
+			results.push(
+				new SystemChatMessage(JSON.stringify({ reasoning, msg: item.content }))
+			);
+		}
+	}
+
+	return results as BaseChatMessage[];
 }

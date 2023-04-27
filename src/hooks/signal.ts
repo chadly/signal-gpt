@@ -1,6 +1,7 @@
 import type { SetupForm } from "@/components/setup";
 import useWebSocket from "react-use-websocket";
 import { useEffect } from "react";
+import { isTemplateExpression } from "typescript";
 
 // https://bbernhard.github.io/signal-cli-rest-api/
 
@@ -16,6 +17,18 @@ interface DataMessage {
 	viewOnce: boolean;
 }
 
+interface SyncMessage {
+	sentMessage?: {
+		destination: string;
+		destinationNumber: string;
+		destinationUuid: string;
+		timestamp: number;
+		message: string;
+		expiresInSeconds: number;
+		viewOnce: boolean;
+	};
+}
+
 interface Envelope {
 	source: string;
 	sourceNumber: string;
@@ -24,6 +37,7 @@ interface Envelope {
 	sourceDevice: number;
 	timestamp: number;
 	dataMessage?: DataMessage;
+	syncMessage?: SyncMessage;
 }
 
 interface WebSocketMessage {
@@ -43,14 +57,20 @@ const useSignal = ({ setup, onMessageReceived }: SignalProps) => {
 
 			console.log("debug", JSON.stringify(wsMsg, null, 2));
 
-			if (
-				wsMsg.envelope.sourceNumber === setup.to &&
-				wsMsg.envelope.dataMessage
-			) {
-				onMessageReceived(wsMsg.envelope.dataMessage.message);
+			if (wsMsg.envelope.sourceNumber === setup.to) {
+				if (wsMsg.envelope.dataMessage) {
+					onMessageReceived(wsMsg.envelope.dataMessage.message);
+				} else if (
+					wsMsg.envelope.syncMessage?.sentMessage &&
+					setup.from === setup.to &&
+					wsMsg.envelope.syncMessage.sentMessage.destinationNumber === setup.to
+				) {
+					// talking to yourself; useful for debugging
+					onMessageReceived(wsMsg.envelope.syncMessage.sentMessage.message);
+				}
 			}
 		}
-	}, [lastMessage, onMessageReceived, setup.to]);
+	}, [lastMessage, onMessageReceived, setup.from, setup.to]);
 
 	return { readyState };
 };
