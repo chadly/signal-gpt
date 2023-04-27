@@ -1,6 +1,5 @@
+import Time from "../time";
 import TimelineIcon from "./icon";
-
-import { format, formatISO, formatDistanceToNow } from "date-fns";
 
 export interface TimelineItem {
 	id: number;
@@ -45,12 +44,7 @@ const ConversationHistory = ({ timeline }: ConversationHistoryProps) => {
 										</p>
 									</div>
 									<div className="whitespace-nowrap text-right text-sm text-slate-200">
-										<time
-											dateTime={formatISO(event.datetime)}
-											title={format(event.datetime, "MMM d h:mm:ss aaa")}
-										>
-											{formatDistanceToNow(event.datetime, { addSuffix: true })}
-										</time>
+										<Time value={event.datetime} />
 									</div>
 								</div>
 							</div>

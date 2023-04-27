@@ -12,14 +12,6 @@ interface ConversationProps {
 const Conversation = ({ setup }: ConversationProps) => {
 	const { history, onHumanMessage, onStart, status } = useAi(setup);
 
-	useEffect(() => {
-		const t = setTimeout(() => {
-			onHumanMessage("hi chad. what's going on?");
-		}, 10000);
-
-		return () => clearTimeout(t);
-	}, [onHumanMessage]);
-
 	return (
 		<>
 			<h2 className="text-base font-semibold leading-7 text-white">
