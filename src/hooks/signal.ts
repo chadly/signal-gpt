@@ -1,6 +1,7 @@
 import type { SetupForm } from "@/components/setup";
 import useWebSocket from "react-use-websocket";
 import { useEffect } from "react";
+import { NETWORK_HOST } from "./host";
 
 // https://bbernhard.github.io/signal-cli-rest-api/
 
@@ -47,7 +48,7 @@ interface WebSocketMessage {
 
 const useSignal = ({ setup, onMessageReceived }: SignalProps) => {
 	const { lastMessage, readyState } = useWebSocket(
-		`ws://localhost:8080/v1/receive/${setup.from}`
+		`ws://${NETWORK_HOST}/v1/receive/${setup.from}`
 	);
 
 	useEffect(() => {

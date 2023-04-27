@@ -8,6 +8,7 @@ import {
 	SystemChatMessage,
 } from "langchain/schema";
 import type { SetupForm } from "@/components/setup";
+import { NETWORK_HOST } from "@/hooks/host";
 
 const chat = new ChatOpenAI({
 	temperature: 0,
@@ -65,7 +66,7 @@ export default async function handler(
 
 	if (data.msg) {
 		// send the message via Signal to recipient
-		await fetch("http://localhost:8080/v2/send", {
+		await fetch(`http://${NETWORK_HOST}/v2/send`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

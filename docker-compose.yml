@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .env
+    environment:
+      - NETWORK_HOST=signal_api
     ports:
       - '3000:3000'
 
