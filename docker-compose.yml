@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
 
-  api:
+  signal:
     container_name: signal_api
     image: bbernhard/signal-cli-rest-api:0.66
     ports:

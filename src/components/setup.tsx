@@ -2,7 +2,8 @@ import Alert from "./alert";
 import { useForm } from "react-hook-form";
 
 export interface SetupForm {
-	phone: string;
+	from: string;
+	to: string;
 	role: string;
 	style: string;
 }
@@ -19,7 +20,8 @@ const Setup = ({ onSubmit }: SetupProps) => {
 		formState: { errors, isValid },
 	} = useForm<SetupForm>();
 
-	const phoneNumber = watch("phone");
+	const fromPhone = watch("from");
+	const toPhone = watch("to");
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="w-full">
@@ -32,22 +34,54 @@ const Setup = ({ onSubmit }: SetupProps) => {
 					<div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 						<div className="sm:col-span-4">
 							<label
-								htmlFor="phone"
+								htmlFor="fromPhone"
 								className="block text-sm font-medium leading-6 text-white"
 							>
-								Phone Number
+								Your Phone Number
 							</label>
 							<div className="mt-2 rounded-md shadow-sm">
 								<input
 									type="text"
-									id="phone"
-									{...register("phone", { required: true })}
+									id="fromPhone"
+									{...register("from", { required: true })}
 									className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-									placeholder="+1 (555) 987-6543"
-									aria-invalid={errors.phone ? "true" : "false"}
+									placeholder="+15559876543"
+									aria-invalid={errors.from ? "true" : "false"}
 								/>
 							</div>
-							{errors.phone && (
+							<p className="mt-2 text-sm text-gray-500" id="email-description">
+								This is your phone number in{" "}
+								<strong>international format</strong>.
+							</p>
+							{errors.from && (
+								<p className="mt-2 text-sm text-red-600">
+									Please enter a valid phone number.
+								</p>
+							)}
+						</div>
+
+						<div className="sm:col-span-4">
+							<label
+								htmlFor="toPhone"
+								className="block text-sm font-medium leading-6 text-white"
+							>
+								Recipient Phone Number
+							</label>
+							<div className="mt-2 rounded-md shadow-sm">
+								<input
+									type="text"
+									id="toPhone"
+									{...register("to", { required: true })}
+									className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+									placeholder="+15559876543"
+									aria-invalid={errors.from ? "true" : "false"}
+								/>
+							</div>
+							<p className="mt-2 text-sm text-gray-500" id="email-description">
+								This is the recipient&apos;s phone number in{" "}
+								<strong>international format</strong>.
+							</p>
+							{errors.to && (
 								<p className="mt-2 text-sm text-red-600">
 									Please enter a valid phone number.
 								</p>
@@ -96,9 +130,9 @@ const Setup = ({ onSubmit }: SetupProps) => {
 			{isValid && (
 				<div className="mt-6 flex items-center">
 					<Alert>
-						You are about to enable GPT-4 to send a message to{" "}
-						<strong>{phoneNumber}</strong> and respond to any subsequent
-						messages as long as the app is running.
+						You are about to enable GPT-4 to send a message from{" "}
+						<strong>{fromPhone}</strong> to <strong>{toPhone}</strong> and
+						respond to any subsequent messages as long as the app is running.
 					</Alert>
 				</div>
 			)}
