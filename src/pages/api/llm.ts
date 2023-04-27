@@ -40,8 +40,6 @@ export default async function handler(
 		...convertItemsToMessages(history),
 	];
 
-	console.log(JSON.stringify(messages, null, 2));
-
 	const chatResponse = await chat.call(messages);
 
 	let data: AiResponse;

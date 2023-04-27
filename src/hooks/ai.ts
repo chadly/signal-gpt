@@ -1,7 +1,8 @@
 import type { TimelineItem } from "@/components/convo/history";
 import type { SetupForm } from "@/components/setup";
 import type { AiRequest, AiResponse } from "@/pages/api/llm";
-import { useCallback, useEffect, useReducer } from "react";
+import { Dispatch, useCallback, useEffect, useReducer } from "react";
+import { debounce } from "lodash";
 
 interface AiState {
 	status: "idle" | "thinking" | "waiting";
@@ -79,6 +80,28 @@ const reducer = (state: AiState, action: Action): AiState => {
 	}
 };
 
+async function callAi({ setup, history, dispatch }: AiArgs) {
+	const data: AiRequest = { setup, history };
+
+	const response = await fetch("/api/llm", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	});
+
+	if (response.status === 200) {
+		const { msg, reasoning } = (await response.json()) as AiResponse;
+		dispatch({ type: "ai", message: msg, reasoning });
+	} else {
+		console.error("LLM Error. Check server logs.", response.status);
+	}
+}
+
+// wait 5 seconds for more human messages to come in before calling the AI
+const callAiDebounced = debounce(callAi, 5000);
+
 const useAi = (setup: SetupForm) => {
 	const [{ status, history }, dispatch] = useReducer(reducer, {
 		status: "idle",
@@ -91,27 +114,8 @@ const useAi = (setup: SetupForm) => {
 	);
 
 	useEffect(() => {
-		async function callAi() {
-			const data: AiRequest = { setup, history };
-
-			const response = await fetch("/api/llm", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(data),
-			});
-
-			if (response.status === 200) {
-				const { msg, reasoning } = (await response.json()) as AiResponse;
-				dispatch({ type: "ai", message: msg, reasoning });
-			} else {
-				console.error("LLM Error. Check server logs.", response.status);
-			}
-		}
-
 		if (status === "thinking") {
-			callAi();
+			callAiDebounced({ setup, history, dispatch });
 		}
 	}, [status, history, setup]);
 
@@ -124,5 +128,11 @@ const useAi = (setup: SetupForm) => {
 		onStart,
 	};
 };
+
+interface AiArgs {
+	setup: SetupForm;
+	history: TimelineItem[];
+	dispatch: Dispatch<Action>;
+}
 
 export default useAi;
