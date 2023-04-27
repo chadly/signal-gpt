@@ -10,15 +10,15 @@ interface ConversationProps {
 }
 
 const Conversation = ({ setup }: ConversationProps) => {
-	const { history, onMessageReceived, status } = useAi(setup);
+	const { history, onHumanMessage, onStart, status } = useAi(setup);
 
 	useEffect(() => {
 		const t = setTimeout(() => {
-			onMessageReceived("hello my sweet baby boy");
+			onHumanMessage("hi chad. what's going on?");
 		}, 10000);
 
 		return () => clearTimeout(t);
-	}, [onMessageReceived]);
+	}, [onHumanMessage]);
 
 	return (
 		<>
@@ -27,6 +27,15 @@ const Conversation = ({ setup }: ConversationProps) => {
 			</h2>
 			<ConversationHistory timeline={history} />
 			<div className="my-4 text-white">
+				{status === "idle" && (
+					<button
+						type="button"
+						className="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+						onClick={onStart}
+					>
+						Send Initial Message
+					</button>
+				)}
 				{status === "thinking" && (
 					<span>
 						<ArrowPathIcon className="animate-spin" />

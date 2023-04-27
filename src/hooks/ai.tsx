@@ -10,7 +10,7 @@ interface AiState {
 
 type Action =
 	| {
-			type: "think";
+			type: "start";
 	  }
 	| {
 			type: "ai";
@@ -24,8 +24,12 @@ type Action =
 
 const reducer = (state: AiState, action: Action): AiState => {
 	switch (action.type) {
-		case "think":
-			return { ...state, status: "thinking" };
+		case "start":
+			return {
+				...state,
+				status: "thinking",
+			};
+
 		case "ai":
 			return {
 				...state,
@@ -49,7 +53,7 @@ const reducer = (state: AiState, action: Action): AiState => {
 		case "human":
 			return {
 				...state,
-				status: "idle",
+				status: "thinking",
 				history: [
 					...state.history,
 					{
@@ -72,7 +76,7 @@ const useAi = (setup: SetupForm) => {
 		history: [],
 	});
 
-	const onMessageReceived = useCallback(
+	const onHumanMessage = useCallback(
 		(message: string) => dispatch({ type: "human", message }),
 		[]
 	);
@@ -80,8 +84,6 @@ const useAi = (setup: SetupForm) => {
 	useEffect(() => {
 		async function callAi() {
 			const data: AiRequest = { setup, history };
-
-			dispatch({ type: "think" });
 
 			const response = await fetch("/api/llm", {
 				method: "POST",
@@ -96,18 +98,18 @@ const useAi = (setup: SetupForm) => {
 			dispatch({ type: "ai", message: msg, reasoning });
 		}
 
-		if (
-			status === "idle" &&
-			(history.length === 0 || history[history.length - 1].type === "human")
-		) {
+		if (status === "thinking") {
 			callAi();
 		}
 	}, [status, history, setup]);
 
+	const onStart = useCallback(() => dispatch({ type: "start" }), []);
+
 	return {
 		status,
 		history,
-		onMessageReceived,
+		onHumanMessage,
+		onStart,
 	};
 };
 
